@@ -1,0 +1,97 @@
+<!-- Main Content -->
+<main class="main-content">
+    <header>
+        <a href="/">Exit</a>
+    </header>
+    <h1>Convert to PPT</h1>
+    <p>Insert the desired file below</p>
+
+    <div class="file-upload-container">
+        <form id="upload-form" action="/home" method="post" enctype="multipart/form-data">
+            <div class="first-area">
+                <label class="file-drop-area" id="file-drop-area" for="file-upload">
+                    <span id="file-name-display">Drag & Drop your file here or click to select</span>
+                </label>
+                <!-- Hidden file input field -->
+                <input type="file" id="file-upload" name="docx_file" class="file-input" onchange="handleFileChange()" style="display: none;" required>
+                <!-- Upload button -->
+                <button class="upload-button" type="submit" id="upload-btn" disabled>Convert to PPT</button>
+            </div>
+            
+            <!-- Theme selection dropdown -->
+            <div class="theme-selection">
+                <label for="theme-select">Select a Theme</label>
+                <select name="theme" id="theme-select" required>
+                    <option value="" disabled selected>Select a theme</option>
+                    {% for theme in themes %}
+                        <option value="{{ theme }}">{{ theme }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <div class="top-content">
+        <h2>Presentation <button id="instruction-button">How to Use</button></h2>
+        <a href="/home" class="clear"><i class='bx bx-trash'></i></a>
+    </div>
+    <div style="border: 2px solid #bdbdbd; min-height: 400px; background-color: white; border-radius: 15px; padding: 20px;">
+        {% if png_data_list %}
+            <div class="main-preview-container">
+                <!-- Display total count of slides in the upper left -->
+                <div class="total-slides">Slide <span id="current-slide">1</span> of {{ png_data_list|length }}</div>
+                
+                <!-- Main Preview Image -->
+                <div class="main-preview">
+                    <img id="main-preview" src="data:image/png;base64,{{ png_data_list[0] }}" alt="Main Slide Preview" />
+                </div>
+                <button id="download-button"><i class='bx bx-download'></i></button>
+            </div>
+            
+            <!-- Thumbnail Row -->
+            <div class="thumbnail-slider" id="thumbnail-slider">
+                {% for png_data in png_data_list %}
+                <div class="thumbnail-item" data-slide="{{ loop.index }}" data-image="data:image/png;base64,{{ png_data }}">
+                    <img src="data:image/png;base64,{{ png_data }}" alt="Slide Thumbnail" />
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="download-modal" style="display: none;">
+                <div id="modal-download">
+                    <button id="close-modal-btn1">&times;</button>
+                    <h2>Rename</h2>
+                    <form method="POST" action="{{ url_for('download_ppt', filename='Document_Lesson_Themed.pptx') }}">
+                        <input type="text" name="custom_filename" placeholder="Document_Lesson.pptx" required />
+                        <button type="submit" class="btn btn-primary">Download PPT</button>
+                    </form>
+                </div>
+            </div>
+    
+        {% else %}
+            <p id="presentation-placeholder">No presentations yet. Upload a file to create one.</p>
+        {% endif %}
+    </div>    
+
+    <!-- Instructions Modal -->
+    <div id="instructions-modal">
+        <div id="modal-content">
+            <button id="close-modal-btn">&times;</button>
+            <h2>How to Use the System</h2>
+            <div class="instructions-container">
+                <div class="instruction-box">
+                    <h3>Step 1: Upload Your File</h3>
+                    <p>Select or drag and drop a file to upload your Self Learning Module (SLM) to be converted into a PowerPoint presentation.</p>
+                </div>
+                <div class="instruction-box">
+                    <h3>Step 2: Select Desired Format</h3>
+                    <p>Choose the file format (DOCX, PDF, etc.) that you would like to convert for presentation.</p>
+                </div>
+                <div class="instruction-box">
+                    <h3>Step 3: Download Your Presentation</h3>
+                    <p>Once you’re happy with the result, click to download your PowerPoint presentation for use in your course.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
